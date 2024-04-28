@@ -1,0 +1,51 @@
+import {gql} from "@apollo/client";
+
+export const POST_BY_SLUG = gql`
+query GetPostBySlug($slug: String!) {
+  posts(first:1,where:{name:$slug}){
+    nodes{
+      databaseId
+      title
+      link
+      id
+      featuredImage{
+        node{
+          sourceUrl
+        }
+      }
+      commentCount
+      commentStatus
+      comments{
+        nodes{
+          content
+          date
+          id:databaseId
+          author{
+            node{
+              name
+              avatar{
+                url
+              }
+            }
+          }
+        }
+      }
+      date
+      content
+      categories(first:1){
+        nodes{
+          databaseId
+          slug
+          name
+        }
+      }
+      author{
+        node{
+          name
+          databaseId
+        }
+      }
+    }
+  }
+}
+`

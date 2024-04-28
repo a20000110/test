@@ -1,0 +1,7 @@
+User-agent: *
+Disallow:/center/
+Disallow:/checkout/
+Disallow:/api/
+Allow: /
+
+Sitemap: https://www.venace.com/api/sitemap

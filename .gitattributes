@@ -1,0 +1,6 @@
+.env merge=ours
+lib/service/service/models/wp_postmeta.model.ts merge=ours
+lib/service/service/models/wp_posts.model.ts merge=ours
+public/image/logo.png merge=ours
+components/Nav/addToCart.tsx merge=ours
+lib/constants/translate.ts merge=ours
