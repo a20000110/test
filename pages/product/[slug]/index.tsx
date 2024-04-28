@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "swiper/swiper-bundle.css";
 import SwiperCore, { Autoplay, Navigation, Pagination } from "swiper";
-import { GqlProductBySlugNodeInterface, GqlProductCategoriesEdges } from "@/lib/types/gql/product/product-by-slug.type";
+import {
+  GqlProductBySlugInterface,
+  GqlProductBySlugNodeInterface,
+  GqlProductCategoriesEdges
+} from "@/lib/types/gql/product/product-by-slug.type";
 import ImageGallery from "@/components/Product/imageGallery";
 import Information from "@/components/Product/information";
 import Describe from "@/components/Product/describe";
@@ -11,9 +15,12 @@ import { GetStaticPathsResult, GetStaticPropsContext } from "next";
 import HeadSeo from "@/components/Seo/head-seo";
 import { PageSeoInterface } from "@/lib/types/rest-api/seo/page-seo.type";
 import { getAllProductSlug, SlugInterface } from "@/lib/hooks/useGetProductSlug";
-import { getStaticLocalePaths, handlerPathSlug, translatePostSEO } from "@/lib/utils/util";
+import { getLang, getStaticLocalePaths, handlerPathSlug, translatePostSEO } from "@/lib/utils/util";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import client from "@/lib/ApolloClient/apolloClient"
+import PRODUCT_BY_SLUG from "@/lib/queries/product-by-slug";
+import { translateStaticProps } from "@/lib/utils/translate-util";
 
 SwiperCore.use([Navigation, Autoplay, Pagination]);
 type Props = {
@@ -165,9 +172,22 @@ export const getStaticProps = async (context: GetStaticPropsContext<{ slug: stri
   //   },
   //   revalidate: REVA_DATE
   // };
+  const promise =await Promise.all([
+    client.query<GqlProductBySlugInterface>({
+      query: PRODUCT_BY_SLUG,
+      variables: {
+        slug: slug
+      }
+    }),
+    translatePostSEO(slug, context.locale),
+    // getLang(context.locale),
+    // translateStaticProps([{ slug }], ["slug"], "auto", context.locale)
+  ]);
+  const [{data},seo] = promise
   return {
     props: {
-      seo: await translatePostSEO(slug, context.locale)
+      seo,
+      product: data.product,
     }
   };
 };

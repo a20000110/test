@@ -164,7 +164,6 @@ export const getStaticProps = async (context: GetStaticPropsContext<{
   slug: string
 }>) => {
   const slug = context.params?.slug || "";
-  try {
     if (slug) {
       const promise = await Promise.all([
         getProductData({
@@ -189,21 +188,6 @@ export const getStaticProps = async (context: GetStaticPropsContext<{
         revalidate: REVA_DATE
       };
     }
-  } catch (e) {
-    return {
-      props: {
-        products: [],
-        allCate: [],
-        seo: null,
-        navProducts: [],
-        messages: await getLang(context.locale),
-        banner: "",
-        tranSlug: (await translateStaticProps([{ slug }], ["slug"], "auto", context.locale))[0]?.slug || slug,
-        slug
-      },
-      revalidate: REVA_DATE
-    };
-  }
 };
 
 export default Page;
