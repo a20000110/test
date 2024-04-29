@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "swiper/swiper-bundle.css";
 import SwiperCore, { Autoplay, Navigation, Pagination } from "swiper";
-import {
-  GqlProductBySlugInterface,
-  GqlProductBySlugNodeInterface,
-  GqlProductCategoriesEdges
-} from "@/lib/types/gql/product/product-by-slug.type";
+import { GqlProductBySlugNodeInterface, GqlProductCategoriesEdges } from "@/lib/types/gql/product/product-by-slug.type";
 import ImageGallery from "@/components/Product/imageGallery";
 import Information from "@/components/Product/information";
 import Describe from "@/components/Product/describe";
@@ -18,8 +14,6 @@ import { getAllProductSlug, SlugInterface } from "@/lib/hooks/useGetProductSlug"
 import { getLang, getStaticLocalePaths, handlerPathSlug, translatePostSEO } from "@/lib/utils/util";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import client from "@/lib/ApolloClient/apolloClient"
-import PRODUCT_BY_SLUG from "@/lib/queries/product-by-slug";
 import { translateStaticProps } from "@/lib/utils/translate-util";
 
 SwiperCore.use([Navigation, Autoplay, Pagination]);
@@ -172,22 +166,19 @@ export const getStaticProps = async (context: GetStaticPropsContext<{ slug: stri
   //   },
   //   revalidate: REVA_DATE
   // };
-  const promise =await Promise.all([
-    client.query<GqlProductBySlugInterface>({
-      query: PRODUCT_BY_SLUG,
-      variables: {
-        slug: slug
-      }
-    }),
+  const promise = await Promise.all([
     translatePostSEO(slug, context.locale),
+    getLang(context.locale),
+    translateStaticProps([{ slug }], ["slug"], "auto", context.locale)
     // getLang(context.locale),
     // translateStaticProps([{ slug }], ["slug"], "auto", context.locale)
   ]);
-  const [{data},seo] = promise
+  const [seo, messages, tranSlug] = promise;
   return {
     props: {
       seo,
-      product: data.product,
+      messages,
+      tranSlug
     }
   };
 };
