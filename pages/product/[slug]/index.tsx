@@ -118,7 +118,6 @@ export const getStaticPaths = async () => {
       fallback: "blocking"
     } as GetStaticPathsResult
   );
-
   console.log(paths.paths.length, "product.length");
   return paths;
 };
@@ -178,7 +177,7 @@ export const getStaticProps = async (context: GetStaticPropsContext<{ slug: stri
     props: {
       seo,
       messages,
-      tranSlug
+      tranSlug: tranSlug[0].slug
     }
   };
 };
